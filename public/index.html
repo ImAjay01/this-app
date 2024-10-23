@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Engine POC</title>
+</head>
+<body>
+
+<h1>Search Engine</h1>
+<form id="searchForm">
+    <input type="text" id="searchTerm" placeholder="Enter search term" required />
+    <button type="submit">Search</button>
+</form>
+
+<div id="results"></div>
+
+<script>
+    document.getElementById('searchForm').addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const searchTerm = document.getElementById('searchTerm').value;
+
+        const response = await fetch(`/api/search?term=${searchTerm}`);
+        const data = await response.json();
+
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = '';
+
+        if (data.youtube.length > 0) {
+            data.youtube.forEach(video => {
+                const videoDiv = document.createElement('div');
+                videoDiv.innerHTML = `<strong>YouTube Video:</strong> <a href="https://www.youtube.com/watch?v=${video.id.videoId}" target="_blank">${video.snippet.title}</a>`;
+                resultsDiv.appendChild(videoDiv);
+            });
+        }
+
+        if (data.articles.length > 0) {
+            data.articles.forEach(article => {
+                const articleDiv = document.createElement('div');
+                articleDiv.innerHTML = `<strong>Article:</strong> <a href="${article.link}" target="_blank">${article.title}</a>`;
+                resultsDiv.appendChild(articleDiv);
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
